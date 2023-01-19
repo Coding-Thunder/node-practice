@@ -13,6 +13,16 @@ app.use(helmet());
 
 app.use(express.json());
 
+app.get("/", async (req, res) => {
+  try {
+    return res.status(200).json({ message: "Server Running Successfully" });
+  } catch ({ message }) {
+    return res.status(500).json({
+      error: message,
+    });
+  }
+});
+
 app.use("/auth", _routers.auth);
 
 app.listen(__PORT__, () => {

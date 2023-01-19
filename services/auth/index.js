@@ -1,33 +1,28 @@
 import { Router as ExpressRouter } from "express";
 import { UserModel } from "../../db/user";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 const Router = ExpressRouter();
 
 Router.post("/signup", async (req, res) => {
   try {
     const { email, password, fullName } = req.body;
-    const checkUserByEmail = await UserModel.findOne({ email });
-
-    // checking if user already exists
-    if (checkUserByEmail) {
-      return res.json({ message: "User Already Exists" });
-    }
-
-    // hashing password
-    const hashSalt = await bcrypt.genSalt(8);
-    const hashedPassword = await bcrypt.hash(password, hashSalt);
-
-    UserModel.create({
-      email,
-      fullName,
-      password: hashedPassword,
-    });
-
-    // generating jwt
-    const token = jwt.sign({ user: { email, fullName } }, "ChatRoom");
-  } catch (error) {}
+    await UserModel.findByEmail(email);
+    const newUser = await UserModel.create({ email, fullName, password });
+    const token = newUser.generateJwtToken();
+    return res.status(200).json({ token, status: "success" });
+  } catch ({ message }) {
+    return res.status(500).json({ error: message });
+  }
 });
 
+Router.post("/signin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await UserModel.findByEmailAndPassword(email, password);
+    const token = user.generateJwtToken();
+    return res.status(200).json({ token, message: "logged in successfully" });
+  } catch ({ message }) {
+    return res.status(500).json({ error: message });
+  }
+});
 export default Router;
