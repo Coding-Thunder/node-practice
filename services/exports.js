@@ -1,7 +1,9 @@
-import AuthRouter from "./auth/index";
+import authRouter from "./auth/index";
+import chatRootRouter from "./chatrooms/index";
 
 const _routers = {
-  auth: AuthRouter,
+  auth: authRouter,
+  chatroom: chatRootRouter,
 };
 
 export default _routers;

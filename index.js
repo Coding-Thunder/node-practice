@@ -13,6 +13,8 @@ app.use(helmet());
 
 app.use(express.json());
 
+app.use("/auth", _routers.auth);
+app.use("/rooms", _routers.chatroom);
 app.get("/", async (req, res) => {
   try {
     return res.status(200).json({ message: "Server Running Successfully" });
@@ -22,8 +24,6 @@ app.get("/", async (req, res) => {
     });
   }
 });
-
-app.use("/auth", _routers.auth);
 
 app.listen(__PORT__, () => {
   connectDB()
